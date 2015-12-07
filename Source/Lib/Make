@@ -1,0 +1,37 @@
+Source                 = $(wildcard *.c)
+
+Empty                  =
+Space                  = $(Empty) $(Empty)
+temproot               = $(subst /Source,$(Space),$(CURDIR))
+DEV_ROOT               = $(word 1,$(temproot))
+
+include $(DEV_ROOT)/Makefile
+
+Package        		   = $(subst $(DEV_ROOT)/Source/,,$(CURDIR))
+PackageSourceDir 	   = $(DEV_ROOT)/Source/$(Package)
+PackageTargetDir       = $(DEV_ROOT)/Object/$(Package)
+
+ifdef FORWINDOW
+Makedir                = @echo
+COptions			   = $(COPTION)
+else
+Makedir                = @mkdir -p
+COptions			   = `pkg-config --cflags --libs gtk+-3.0 gmodule-2.0`
+endif
+
+CSourceFiles    	   = $(Source:%.c= $(PackageSourceDir)/%.c)
+CObjectFiles           = $(Source:%.c= $(PackageTargetDir)/%.o)
+
+$(PackageTargetDir):
+	$(Makedir) $@
+
+CCompiler              = gcc -std=gnu99 -g
+
+$(PackageTargetDir)/%.o : $(PackageSourceDir)/%.c
+	@echo $@
+	@$(CCompiler) -c $< -o $@ $(COptions)
+
+package_build: $(PackageTargetDir) $(CObjectFiles)
+
+package_clean : 
+	@rm -fr $(PackageTargetDir)/*
