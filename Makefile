@@ -2,6 +2,7 @@ OS                     = linux
 
 Packages 		       = \
 	                      Lib \
+	                      Calc \
 
 Empty                  =
 Space                  = $(Empty) $(Empty)

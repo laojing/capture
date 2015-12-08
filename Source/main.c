@@ -1,13 +1,8 @@
 #include "Lib/common.h"
 #include "Lib/persist.h"
 #include "Lib/capdata.h"
+#include "Calc/optimize.h"
 #include "main.h"
-
-#ifdef linux
-#else
-#include <windows.h>
-#include "ezdnaapi.h"
-#endif
 
 int stop = 0;
 
@@ -21,11 +16,9 @@ MainLoop ( void ) {
 	while ( !stop ) {
 
 		int curtime = time(NULL);
+
+		/*
 		gchar *dstr = getIntDate2Str ( histtime );
-//		printf ( "==:%s\n", dstr );
-//		fflush ( stdout );
-
-
 		// History Ten Data
 		gint num =  HasTenData(histtime);
 		if ( num == 0 ) {
@@ -35,30 +28,30 @@ MainLoop ( void ) {
 			printf ( "History TenTime Bad Data:%s\n", dstr ), fflush ( stdout );
 			DelTenData ( histtime );
 			CapTenData ( histtime );
-		//} else {
-			//printf ( "History TenTime Ready %d, Data:%d\n", num, histtime ), fflush ( stdout );
 		}
+		g_free ( dstr );
 		if ( histtime >= 1437147000 ) histtime -= 600;
-		/*
 
 		// Current Ten Data
 		int tentime = (curtime / CALCSPAN) * CALCSPAN;
 		if ( curtime - tentime > 0 && curtime - tentime < CALCSPAN/3 && readneed && tentime != (histtime+600) ) {
-			UCTToStringTime ( tentime, szTime, 32 );
-			printf ( "Cur TenTime Data:%s\n", szTime ), fflush ( stdout );
-			readneed = 0;
-			CapTenData ( tentime );
+			if ( HasTenData(tentime) ) readneed = 0;
+			else {
+				gchar *dstr = getIntDate2Str ( histtime );
+				printf ( "Cur TenTime Data:%s\n", dstr ), fflush ( stdout );
+				g_free ( dstr );
+				CapTenData ( tentime );
+			}
 		} else if ( curtime - tentime > CALCSPAN/3 ) {
 			readneed = 1;
 		}
+		*/
 
 		// Optimize
 		CalcOptimize ( curtime );
-		*/
 
 //		g_usleep ( SECOND*100 );
 		g_usleep ( SECOND );
-		g_free ( dstr );
 	}
 	CloseMysql ();
 }

@@ -52,7 +52,7 @@ void GetLocalTenData ( int turb, int tentime, int num, float *f1Temp ) {
 
 	// 本地数据库存储的数据从1437146400到1445661000间隔为8514600
 	// 将所有时间折算的这个区间
-	GString *str = g_string_new ( "select wind,power,var,voltagea,voltageb,voltagec,currenta,currentb,currentc,speed,pitch1,pitch2,pitch3,direct,position from ten where " );
+	GString *str = g_string_new ( "select wind,power,var,voltagea,voltageb,voltagec,currenta,currentb,currentc,speed,pitch1,pitch2,pitch3,direct,position from localten where " );
 	g_string_append_printf ( str, "savetime=%d and turbnum=%d", tentime % 8514600 + 1437146400, turb ); 
 	if ( mysql_query(mysql, str->str) ) print_error(str->str);
 	g_string_free ( str, TRUE );
@@ -100,10 +100,6 @@ DelTenData ( int tentime ) {
 	waiting = 0;
 }
 
-
-
-
-/*
 TenData** GetTenData( gint curtime, gint duration, gint *len ) {
 	while ( waiting ) g_usleep ( 1 );
 	waiting = 1;
@@ -148,13 +144,6 @@ int haseffi = FALSE;
 void SaveEffi( PowerTurb *turbs, gint len ) {
 	while ( waiting ) g_usleep ( 1 );
 	waiting = 1;
-	if ( !haseffi ) {
-		if ( mysql_query(mysql, "select * from effi") ) print_error("count effi");
-		MYSQL_RES *result = mysql_store_result ( mysql );
-		unsigned long lengths = mysql_num_rows ( result );
-		if ( lengths > 0 ) haseffi = TRUE;
-		mysql_free_result ( result );
-	}
 
 	if ( haseffi ) {
 		GString *str = g_string_new ( "update effi set value=case turbnum " );
@@ -184,17 +173,11 @@ void SaveEffi( PowerTurb *turbs, gint len ) {
 	waiting = 0;
 }
 
+
 int hasfollow = FALSE;
 void SaveFollows ( Follow *fols, gint len ) {
 	while ( waiting ) g_usleep ( 1 );
 	waiting = 1;
-	if ( !hasfollow ) {
-		if ( mysql_query(mysql, "select * from follow") ) print_error("count follow");
-		MYSQL_RES *result = mysql_store_result ( mysql );
-		unsigned long lengths = mysql_num_rows ( result );
-		if ( lengths > 0 ) hasfollow = TRUE;
-		mysql_free_result ( result );
-	}
 
 	if ( hasfollow ) {
 		GString *str = g_string_new ( "update follow set value=case turbnum " );
@@ -234,7 +217,7 @@ void SaveFollows ( Follow *fols, gint len ) {
 			if ( i==0 ) g_string_append_printf ( str, "(null,0,%d,%f,%f,%f)", i+1, fols[i].Power, fols[i].Var, fols[i].Value );
 			else g_string_append_printf ( str, ",(null,0,%d,%f,%f,%f)", i+1, fols[i].Power, fols[i].Var, fols[i].Value );
 		}
-//		if ( mysql_query(mysql, "delete from effi") ) print_error("delete effi");
+		if ( mysql_query(mysql, "delete from follow") ) print_error("delete follow");
 //		MYSQL_RES *result = mysql_store_result ( mysql );
 //		mysql_free_result ( result );
 		if ( mysql_query(mysql, str->str) ) print_error(str->str);
@@ -246,7 +229,6 @@ void SaveFollows ( Follow *fols, gint len ) {
 
 	waiting = 0;
 }
-
 
 void SavePitchs ( gfloat *gains, gint savetime ) {
 	while ( waiting ) g_usleep ( 1 );
@@ -283,4 +265,3 @@ void SaveWind ( gint *state, gfloat *beta, gfloat *alpha, gint len ) {
 
 	waiting = 0;
 }
-*/
