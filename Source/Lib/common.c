@@ -1,5 +1,14 @@
 #include "common.h"
 
+gchar*
+getIntDate2Str ( gint64 datetime ) {
+	GDateTime *dt = g_date_time_new_from_unix_local ( datetime );
+	gchar *res = g_date_time_format ( dt, "%Y-%m-%d %H:%M:%S" );
+	g_date_time_unref ( dt );
+	return res;
+}
+
+
 //--------------------------------------------------------------------
 //
 // 函数功能  ：对日期字符串转换为从1970-01-01 00:00:00 UTC开始的秒数。
@@ -54,7 +63,9 @@ getStrDate2Int ( gchar *strdate ) {
 		g_strfreev ( dates2 );
 		g_strfreev ( times );
 		g_strfreev ( datetime );
-		return g_date_time_to_unix ( dt );
+		gint64 res = g_date_time_to_unix ( dt );
+		g_date_time_unref ( dt );
+		return res;
 	}
 	g_strfreev ( datetime );
 	return 0;

@@ -14,5 +14,9 @@
 void OpenMysql();
 void CloseMysql();
 
+gint HasTenData ( int tentime );
+void DelTenData ( int tentime );
+void GetLocalTenData ( int turb, int tentime, int num, float *f1Temp );
+void InsertTenData ( gint turb, gint tentime, gint num, gfloat *temp );
 
 #endif

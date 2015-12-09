@@ -6,5 +6,6 @@
 #include <glib.h>
 
 gint64 getStrDate2Int ( gchar *strdate );
+gchar* getIntDate2Str ( gint64 datetime );
 
 #endif

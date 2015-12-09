@@ -9,14 +9,14 @@ include $(DEV_ROOT)/Makefile
 
 Package        		   = $(subst $(DEV_ROOT)/Source/,,$(CURDIR))
 PackageSourceDir 	   = $(DEV_ROOT)/Source/$(Package)
-PackageTargetDir       = $(DEV_ROOT)/Object/$(Package)
+PackageTargetDir       = $(DEV_ROOT)/Object/$(OBJMID)/$(Package)
 
-ifdef FORWINDOW
-Makedir                = @echo
-COptions			   = $(COPTION)
-else
+ifeq ($(OS),linux)
 Makedir                = @mkdir -p
 COptions			   = `pkg-config --cflags --libs gtk+-3.0 gmodule-2.0`
+else
+Makedir                = @echo
+COptions			   = $(COPTION)
 endif
 
 CSourceFiles    	   = $(Source:%.c= $(PackageSourceDir)/%.c)

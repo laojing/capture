@@ -29,22 +29,6 @@ void CloseMysql() {
 	}
 }
 
-/*
-void 
-DelTenData ( int tentime ) {
-	while ( waiting ) g_usleep ( 1 );
-	waiting = 1;
-
-	gchar *sql = g_strdup_printf ( "delete from ten where savetime=%d;", tentime );
-	if ( mysql_query(mysql, sql) ) print_error(sql);
-	g_free ( sql );
-
-	MYSQL_RES *result = mysql_store_result ( mysql );
-	mysql_free_result ( result );
-
-	waiting = 0;
-}
-
 gint 
 HasTenData ( int tentime ) {
 	while ( waiting ) g_usleep ( 1 );
@@ -62,42 +46,21 @@ HasTenData ( int tentime ) {
 	return lengths;
 }
 
-float 
-GetLocalData ( int turb, int var, int tentime ) {
-	while ( waiting ) g_usleep ( 1 );
-	waiting = 1;
-	if ( tentime < 1438356600 ) tentime += 29*24*60*60;
-	gchar *sql = g_strdup_printf ( "select value from tab%02d%02d where id>%d and id<=%d;", 
-			turb, var, tentime-CALCSPAN, tentime );
-	if ( mysql_query(mysql, sql) ) print_error(sql);
-	g_free ( sql );
-	MYSQL_RES *result = mysql_store_result ( mysql );
-	MYSQL_ROW row;
-	gint num = 0;
-	gfloat value = 0;
-	while ( row = mysql_fetch_row(result) ) {
-		value += atof ( row[0] );
-		num++;
-	}
-	if ( num > 0 ) value /= num;
-	mysql_free_result ( result );
-	waiting = 0;
-	return value;
-}
-
-void GetLocalTenData ( int turb, int tentime, float *f1Temp ) {
+void GetLocalTenData ( int turb, int tentime, int num, float *f1Temp ) {
 	while ( waiting ) g_usleep ( 1 );
 	waiting = 1;
 
+	// 本地数据库存储的数据从1437146400到1445661000间隔为8514600
+	// 将所有时间折算的这个区间
 	GString *str = g_string_new ( "select wind,power,var,voltagea,voltageb,voltagec,currenta,currentb,currentc,speed,pitch1,pitch2,pitch3,direct,position from ten where " );
-	g_string_append_printf ( str, "savetime=%d and turbnum=%d", tentime-20*24*60*60, turb ); 
+	g_string_append_printf ( str, "savetime=%d and turbnum=%d", tentime % 8514600 + 1437146400, turb ); 
 	if ( mysql_query(mysql, str->str) ) print_error(str->str);
 	g_string_free ( str, TRUE );
 
 	MYSQL_RES *result = mysql_store_result ( mysql );
 	MYSQL_ROW row;
 	while ( row = mysql_fetch_row(result) ) {
-		for ( int i=0; i<F1NUM; i++ ) {
+		for ( int i=0; i<num; i++ ) {
 			f1Temp[i] = atof ( row[i] );
 		}
 	}
@@ -107,12 +70,12 @@ void GetLocalTenData ( int turb, int tentime, float *f1Temp ) {
 }
 
 void 
-InsertTenData ( gint turb, gint tentime, gfloat *temp ) {
+InsertTenData ( gint turb, gint tentime, gint num, gfloat *temp ) {
 	while ( waiting ) g_usleep ( 1 );
 	waiting = 1;
 	GString *str = g_string_new ( "insert into ten (savetime,turbnum,wind,power,var,voltagea,voltageb,voltagec,currenta,currentb,currentc,speed,pitch1,pitch2,pitch3,direct,position) values(" );
 	g_string_append_printf ( str, "%d,%d", tentime, turb ); 
-	for ( int i=0; i<F1NUM; i++ ) {
+	for ( int i=0; i<num; i++ ) {
 		g_string_append_printf ( str, ",%f", temp[i] );
 	}
 	g_string_append_printf ( str, ");" );
@@ -122,7 +85,25 @@ InsertTenData ( gint turb, gint tentime, gfloat *temp ) {
 	mysql_free_result ( result );
 	waiting = 0;
 }
+void 
+DelTenData ( int tentime ) {
+	while ( waiting ) g_usleep ( 1 );
+	waiting = 1;
 
+	gchar *sql = g_strdup_printf ( "delete from ten where savetime=%d;", tentime );
+	if ( mysql_query(mysql, sql) ) print_error(sql);
+	g_free ( sql );
+
+	MYSQL_RES *result = mysql_store_result ( mysql );
+	mysql_free_result ( result );
+
+	waiting = 0;
+}
+
+
+
+
+/*
 TenData** GetTenData( gint curtime, gint duration, gint *len ) {
 	while ( waiting ) g_usleep ( 1 );
 	waiting = 1;
