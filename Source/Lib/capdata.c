@@ -62,7 +62,7 @@ void CapTenData ( gint tentime ) {
 	total[4] = 0; total[5] = 0;
 	for ( int turb=1; turb<=33; turb++ ) {
 
-#ifndef SUTTEST
+#ifdef SUTTEST
 		GetLocalTenData ( turb, tentime, F1NUM, f1Temp );
 #else
 		for ( int var=0; var<F1NUM; var++ ) {
@@ -82,7 +82,7 @@ void CapTenData ( gint tentime ) {
 	}
 
 	for ( int turb=34; turb<=66; turb++ ) {
-#ifndef SUTTEST
+#ifdef SUTTEST
 		GetLocalTenData ( turb, tentime, F2NUM, f2Temp );
 #else
 		for ( int var=0; var<F2NUM; var++ ) {
