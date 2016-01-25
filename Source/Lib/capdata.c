@@ -2,7 +2,7 @@
 #include "persist.h"
 
 #ifndef linux
-//#include <windows.h>
+#include <windows.h>
 #include "dnaapi.h"
 #include "ezdnaapi.h"
 #endif

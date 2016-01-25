@@ -12,7 +12,7 @@ gint gPitch2fSpdMin = 1100;
 gint gPitch2fSpdMax = 1750;
 
 void OptPitch ( TenData **tens, gint len, gint savetime ) {
-	printf ( "llllllne:%d\n", len ), fflush ( stdout );
+	printf ( "Pitch Running...\n" ); fflush ( stdout );
 	gfloat *torque = (gfloat*)(g_malloc0 ( sizeof(gfloat) * len ));
 
 	gfloat gains[66];
@@ -52,4 +52,6 @@ void OptPitch ( TenData **tens, gint len, gint savetime ) {
 	SavePitchs ( gains, savetime );
 
 	g_free ( torque );
+	printf ( "Pitch Done\n" ); fflush ( stdout );
 }
+

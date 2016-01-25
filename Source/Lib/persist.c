@@ -103,8 +103,13 @@ DelTenData ( int tentime ) {
 TenData** GetTenData( gint curtime, gint duration, gint *len ) {
 	while ( waiting ) g_usleep ( 1 );
 	waiting = 1;
+#ifndef linux
 	gchar *sql = g_strdup_printf ( "select savetime,turbnum,wind,power,var,voltagea,voltageb,voltagec,currenta,currentb,currentc,speed,pitch1,pitch2,pitch3,direct,position from ten where savetime>%d and savetime<%d;", 
 			curtime - duration, curtime );
+#else
+	gchar *sql = g_strdup_printf ( "select savetime,turbnum,wind,power,var,voltagea,voltageb,voltagec,currenta,currentb,currentc,speed,pitch1,pitch2,pitch3,direct,position from ten where savetime=1449148200;", 
+			curtime - duration, curtime );
+#endif
 	if ( mysql_query(mysql, sql) ) print_error(sql);
 	g_free ( sql );
 	MYSQL_RES *result = mysql_store_result ( mysql );
@@ -214,8 +219,8 @@ void SaveFollows ( Follow *fols, gint len ) {
 	} else {
 		GString *str = g_string_new ( "insert into follow (id,version,turbnum,power,var,value) values" );
 		for ( int i=0; i<len; i++ ) {
-			if ( i==0 ) g_string_append_printf ( str, "(null,0,%d,%f,%f,%f)", i+1, fols[i].Power, fols[i].Var, fols[i].Value );
-			else g_string_append_printf ( str, ",(null,0,%d,%f,%f,%f)", i+1, fols[i].Power, fols[i].Var, fols[i].Value );
+			if ( i==0 ) g_string_append_printf ( str, "(null,0,%d,%f,%f,%f)", fols[i].turbnum, fols[i].Power, fols[i].Var, fols[i].Value );
+			else g_string_append_printf ( str, ",(null,0,%d,%f,%f,%f)", fols[i].turbnum, fols[i].Power, fols[i].Var, fols[i].Value );
 		}
 		if ( mysql_query(mysql, "delete from follow") ) print_error("delete follow");
 //		MYSQL_RES *result = mysql_store_result ( mysql );

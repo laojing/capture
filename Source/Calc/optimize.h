@@ -6,6 +6,7 @@
 #include <glib.h>
 #include "../main.h"
 
+
 void CalcOptimize ( gint curtime );
 void OptPower ( TenData **tens, gint len );
 void OptFollow ( TenData **tens, gint len );

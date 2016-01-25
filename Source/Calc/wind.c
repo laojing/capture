@@ -43,7 +43,7 @@ void CalcFactor ( TenData **tens, gint len, gint n, gint index, gfloat *beta, gf
 }
 
 void OptWind ( TenData **tens, gint len ) {
-	printf ( "wind len:%d\n", len );
+	printf ( "Wind Running...\n" ); fflush ( stdout );
 	gint n = len/67;
 	gint state[66];
 	gfloat beta[66];
@@ -65,4 +65,5 @@ void OptWind ( TenData **tens, gint len ) {
 		}
 	}
 	SaveWind ( state, beta, alpha, 66 );
+	printf ( "Wind Done\n" ); fflush ( stdout );
 }
