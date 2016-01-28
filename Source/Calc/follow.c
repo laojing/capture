@@ -15,6 +15,8 @@ void SaveFollowPower ( Follow *fol, int turbnum, float value, float power ) {
 	fol->Value = value;
 	fol->Power = power;
 	fol->Var = value;
+	printf( "%4.2f:%4.2f ", fol->Power, fol->Var );
+	fflush( stdout );
 }
 
 void SaveFollow ( Follow *fol, int turbnum, float value ) {
@@ -193,7 +195,6 @@ void OptFollow ( TenData **tens, gint len ) {
 		itotalsopt += itotalopt[i];
 	}
 	float translostopt = 67.8 + 1.05*377.2*pow( (35*itotalsopt)/SN, 2 );
-
 
 	int folindex = 72;
 	for( int i=0; i<5; i++ ) {

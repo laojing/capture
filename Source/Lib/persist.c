@@ -184,6 +184,7 @@ void SaveFollows ( Follow *fols, gint len ) {
 	while ( waiting ) g_usleep ( 1 );
 	waiting = 1;
 
+	/*
 	if ( hasfollow ) {
 		GString *str = g_string_new ( "update follow set value=case turbnum " );
 		for ( int i=0; i<len; i++ ) {
@@ -217,6 +218,7 @@ void SaveFollows ( Follow *fols, gint len ) {
 		mysql_free_result ( result );
 
 	} else {
+		*/
 		GString *str = g_string_new ( "insert into follow (id,version,turbnum,power,var,value) values" );
 		for ( int i=0; i<len; i++ ) {
 			if ( i==0 ) g_string_append_printf ( str, "(null,0,%d,%f,%f,%f)", fols[i].turbnum, fols[i].Power, fols[i].Var, fols[i].Value );
@@ -230,7 +232,7 @@ void SaveFollows ( Follow *fols, gint len ) {
 		MYSQL_RES *result = mysql_store_result ( mysql );
 		mysql_free_result ( result );
 		hasfollow = TRUE;
-	}
+	//}
 
 	waiting = 0;
 }

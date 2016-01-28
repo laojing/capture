@@ -1,4 +1,4 @@
-OS                     = linux
+OS                     = win64
 
 Packages 		       = \
 	                      Lib \

@@ -17,25 +17,69 @@
 #ifndef linux
 float 
 GetRealData ( int turb, int var, int tentime ) {
-	char szPoint[32];
+	//char szPoint[32];
 	int farm = 1;
 	if ( turb > 33 ) {
 		farm = 2;
 		turb-= 33;
 	}
-	strcpy ( szPoint, g_strdup_printf ( "DBXNY.DLTSUNIV.%dF%02dA%03d", farm, turb, var ) );
-
-	unsigned long pulKey = 0;
-	int ret = DnaGetHistAvgUTC ( szPoint, tentime-599, tentime, 600, &pulKey );
+		//strcpy ( szPoint, g_strdup_printf ( "DBXNY.DLTSUNIV.%dF%02dA%03d", farm, turb, var ) );
+	gchar *szPoint = g_strdup_printf ( "DBXNY.DLTSUNIV.%dF%02dA%03d", farm, turb, var );
 
 	double pdValue = 0;
 	long ptTime = 0;
 	char szStatus[32];
 	unsigned short nStatus = 32;
+	unsigned long pulKey = 0;
 
-	while( ret == 0 ) {
-		ret = DnaGetNextHistUTC( pulKey, &pdValue, &ptTime, szStatus, nStatus );
-		if ( ret ==0 ) return pdValue;
+
+	if( (farm == 1 && (var == 24 || var == 25) ) 
+		|| (farm == 2 && (var == 6 || var == 7) ) ) {
+		int ret = DnaGetHistRawUTC ( szPoint, tentime-599, tentime, &pulKey );
+		int total = 0;
+		float value = 0;
+
+		// 金凤误差角或东汽位置
+		if( var == 25 || var == 7 ) {
+			while ( ret == 0 ) {
+				ret = DnaGetNextHistUTC ( pulKey, &pdValue, &ptTime, szStatus, nStatus );
+				if ( ret == 0 ) {
+					value += pdValue - 180;
+					total++;
+				}
+			}
+			return total>0?value/total:0;
+		// 金凤位置
+		}else if( var == 24 ) {
+			while ( ret == 0 ) {
+				ret = DnaGetNextHistUTC ( pulKey, &pdValue, &ptTime, szStatus, nStatus );
+				if ( ret == 0 ) {
+					while( pdValue < 0 ) pdValue += 360;
+					while( pdValue > 360 ) pdValue -= 360;
+					value += pdValue - 180;
+					total++;
+				}
+			}
+			return total>0?value/total:0;
+		// 东汽误差角
+		}else if( var == 6 ) {
+			while ( ret == 0 ) {
+				ret = DnaGetNextHistUTC ( pulKey, &pdValue, &ptTime, szStatus, nStatus );
+				if ( ret == 0 ) {
+					if( pdValue > 180 ) pdValue -= 360;
+					if( pdValue < -180 ) pdValue += 360;
+					value += pdValue;
+					total++;
+				}
+			}
+			return total>0?value/total:0;
+		}
+	} else {
+		int ret = DnaGetHistAvgUTC ( szPoint, tentime-599, tentime, 600, &pulKey );
+		while( ret == 0 ) {
+			ret = DnaGetNextHistUTC( pulKey, &pdValue, &ptTime, szStatus, nStatus );
+			if ( ret ==0 ) return pdValue;
+		}
 	}
 
 	return 0.0;

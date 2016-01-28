@@ -7,7 +7,7 @@
 #include <time.h>
 
 // 测试标志
-#define SUTTEST
+//#define SUTTEST
 
 #define SECOND            1000000
 // 统计数据周期10分钟

@@ -17,7 +17,6 @@ MainLoop ( void ) {
 
 		int curtime = time(NULL);
 
-		/*
 		gchar *dstr = getIntDate2Str ( histtime );
 		// History Ten Data
 		gint num =  HasTenData(histtime);
@@ -45,7 +44,6 @@ MainLoop ( void ) {
 		} else if ( curtime - tentime > CALCSPAN/3 ) {
 			readneed = 1;
 		}
-		*/
 
 		// Optimize
 		CalcOptimize ( curtime );
