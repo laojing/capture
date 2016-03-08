@@ -131,7 +131,7 @@ void OptFollow ( TenData **tens, gint len ) {
 	turbLostb += 0.4/10000*SN + 12*3*35000*acur*3*35000*acur/10000/SN * (UN/35000) * (UN/35000);
 
 	// 66 优化前损耗
-	// 67 优化前损耗
+	// 67 优化后损耗
 	if ( turbLosta > turbLostb ) {
 		SaveFollow ( fols+66, 100, turbLosta/1000 );
 		SaveFollow ( fols+67, 101, turbLostb/1000 );
@@ -147,8 +147,6 @@ void OptFollow ( TenData **tens, gint len ) {
 	SaveFollow ( fols+70, 104, realvals );
 	// 71 风场无功补偿前
 	SaveFollow ( fols+71, 105, deltaq/1000 - realvals );
-
-
 
 	float itotal[5] = {0,0,0,0,0};
 	for( int i=0; i<5; i++ ) {

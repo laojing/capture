@@ -1,4 +1,8 @@
+ifeq ($(shell uname),Linux)
+OS                     = linux
+else
 OS                     = win64
+endif
 
 Packages 		       = \
 	                      Lib \

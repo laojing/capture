@@ -12,6 +12,9 @@ MainLoop ( void ) {
 	gint histtime = time(NULL);
 	histtime = (histtime / CALCSPAN) * CALCSPAN;
 	OpenMysql ();
+#ifdef linux
+	OpenMysqlReal ();
+#endif
 	gint num =  HasTenData(histtime);
 	while ( !stop ) {
 
@@ -26,17 +29,19 @@ MainLoop ( void ) {
 		} else if ( num != 67 ) {
 			printf ( "History TenTime Bad Data:%s\n", dstr ), fflush ( stdout );
 			DelTenData ( histtime );
+			printf ( "Delete TenTime Bad Data:%s\n", dstr ), fflush ( stdout );
 			CapTenData ( histtime );
+			printf ( "Cap TenTime Bad Data:%s\n", dstr ), fflush ( stdout );
 		}
 		g_free ( dstr );
-		if ( histtime >= 1437147000 ) histtime -= 600;
+		if ( histtime > 1446307200 ) histtime -= 600;
 
 		// Current Ten Data
 		int tentime = (curtime / CALCSPAN) * CALCSPAN;
 		if ( curtime - tentime > 0 && curtime - tentime < CALCSPAN/3 && readneed && tentime != (histtime+600) ) {
 			if ( HasTenData(tentime) ) readneed = 0;
 			else {
-				gchar *dstr = getIntDate2Str ( histtime );
+				gchar *dstr = getIntDate2Str ( curtime );
 				printf ( "Cur TenTime Data:%s\n", dstr ), fflush ( stdout );
 				g_free ( dstr );
 				CapTenData ( tentime );
@@ -52,6 +57,9 @@ MainLoop ( void ) {
 		g_usleep ( SECOND );
 	}
 	CloseMysql ();
+#ifdef linux
+	CloseMysqlReal ();
+#endif
 }
 
 int

@@ -11,7 +11,8 @@ gint gPitch2fTrqMax = 3500;
 gint gPitch2fSpdMin = 1100;
 gint gPitch2fSpdMax = 1750;
 
-void OptPitch ( TenData **tens, gint len, gint savetime ) {
+void 
+OptPitch ( TenData **tens, gint len, gint savetime ) {
 	printf ( "Pitch Running...\n" ); fflush ( stdout );
 	gfloat *torque = (gfloat*)(g_malloc0 ( sizeof(gfloat) * len ));
 

@@ -46,29 +46,6 @@ HasTenData ( int tentime ) {
 	return lengths;
 }
 
-void GetLocalTenData ( int turb, int tentime, int num, float *f1Temp ) {
-	while ( waiting ) g_usleep ( 1 );
-	waiting = 1;
-
-	// 本地数据库存储的数据从1437146400到1445661000间隔为8514600
-	// 将所有时间折算的这个区间
-	GString *str = g_string_new ( "select wind,power,var,voltagea,voltageb,voltagec,currenta,currentb,currentc,speed,pitch1,pitch2,pitch3,direct,position from localten where " );
-	g_string_append_printf ( str, "savetime=%d and turbnum=%d", tentime % 8514600 + 1437146400, turb ); 
-	if ( mysql_query(mysql, str->str) ) print_error(str->str);
-	g_string_free ( str, TRUE );
-
-	MYSQL_RES *result = mysql_store_result ( mysql );
-	MYSQL_ROW row;
-	while ( row = mysql_fetch_row(result) ) {
-		for ( int i=0; i<num; i++ ) {
-			f1Temp[i] = atof ( row[i] );
-		}
-	}
-	mysql_free_result ( result );
-
-	waiting = 0;
-}
-
 void 
 InsertTenData ( gint turb, gint tentime, gint num, gfloat *temp ) {
 	while ( waiting ) g_usleep ( 1 );
@@ -103,13 +80,8 @@ DelTenData ( int tentime ) {
 TenData** GetTenData( gint curtime, gint duration, gint *len ) {
 	while ( waiting ) g_usleep ( 1 );
 	waiting = 1;
-#ifndef linux
 	gchar *sql = g_strdup_printf ( "select savetime,turbnum,wind,power,var,voltagea,voltageb,voltagec,currenta,currentb,currentc,speed,pitch1,pitch2,pitch3,direct,position from ten where savetime>%d and savetime<%d;", 
 			curtime - duration, curtime );
-#else
-	gchar *sql = g_strdup_printf ( "select savetime,turbnum,wind,power,var,voltagea,voltageb,voltagec,currenta,currentb,currentc,speed,pitch1,pitch2,pitch3,direct,position from ten where savetime=1449148200;", 
-			curtime - duration, curtime );
-#endif
 	if ( mysql_query(mysql, sql) ) print_error(sql);
 	g_free ( sql );
 	MYSQL_RES *result = mysql_store_result ( mysql );
@@ -150,6 +122,7 @@ void SaveEffi( PowerTurb *turbs, gint len ) {
 	while ( waiting ) g_usleep ( 1 );
 	waiting = 1;
 
+	/*
 	if ( haseffi ) {
 		GString *str = g_string_new ( "update effi set value=case turbnum " );
 		for ( int i=0; i<len; i++ ) {
@@ -161,6 +134,7 @@ void SaveEffi( PowerTurb *turbs, gint len ) {
 		MYSQL_RES *result = mysql_store_result ( mysql );
 		mysql_free_result ( result );
 	} else {
+		*/
 		GString *str = g_string_new ( "insert into effi values" );
 		for ( int i=0; i<len; i++ ) {
 			if ( i==0 ) g_string_append_printf ( str, "(null,0,%d,%f)", i+1, turbs[i].effi );
@@ -174,7 +148,7 @@ void SaveEffi( PowerTurb *turbs, gint len ) {
 		result = mysql_store_result ( mysql );
 		mysql_free_result ( result );
 		haseffi = TRUE;
-	}
+//	}
 	waiting = 0;
 }
 
@@ -223,6 +197,7 @@ void SaveFollows ( Follow *fols, gint len ) {
 		for ( int i=0; i<len; i++ ) {
 			if ( i==0 ) g_string_append_printf ( str, "(null,0,%d,%f,%f,%f)", fols[i].turbnum, fols[i].Power, fols[i].Var, fols[i].Value );
 			else g_string_append_printf ( str, ",(null,0,%d,%f,%f,%f)", fols[i].turbnum, fols[i].Power, fols[i].Var, fols[i].Value );
+//			printf("%d|%f=", i, fols[i].Value);
 		}
 		if ( mysql_query(mysql, "delete from follow") ) print_error("delete follow");
 //		MYSQL_RES *result = mysql_store_result ( mysql );
@@ -236,6 +211,24 @@ void SaveFollows ( Follow *fols, gint len ) {
 
 	waiting = 0;
 }
+
+gint 
+HasPitchData ( int tentime ) {
+	while ( waiting ) g_usleep ( 1 );
+	waiting = 1;
+
+	gchar *sql = g_strdup_printf ( "select * from pitch where savetime=%d;", tentime );
+	if ( mysql_query(mysql, sql) ) print_error(sql);
+	g_free ( sql );
+
+	MYSQL_RES *result = mysql_store_result ( mysql );
+	unsigned long lengths = mysql_num_rows ( result );
+	mysql_free_result ( result );
+
+	waiting = 0;
+	return lengths;
+}
+
 
 void SavePitchs ( gfloat *gains, gint savetime ) {
 	while ( waiting ) g_usleep ( 1 );

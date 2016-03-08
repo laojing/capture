@@ -18,11 +18,20 @@ void CloseMysql();
 gint HasTenData ( int tentime );
 void DelTenData ( int tentime );
 void GetLocalTenData ( int turb, int tentime, int num, float *f1Temp );
-void InsertTenData ( gint turb, gint tentime, gint num, gfloat *temp );
+void InsertTenData( gint turb, gint tentime, gint num, gfloat *temp );
 TenData** GetTenData( gint curtime, gint duration, gint *len );
 void SaveEffi( PowerTurb *turbs, gint len );
-void SaveFollows ( Follow *fols, gint len );
+
+void SaveFollows( Follow *fols, gint len );
+
+gint HasPitchData ( int tentime );
 void SavePitchs ( gfloat *gains, gint savetime );
 void SaveWind ( gint *state, gfloat *beta, gfloat *alpha, gint len );
+
+// REAL ZDT
+void OpenMysqlReal();
+void CloseMysqlReal();
+double GetRealAvgValue( gint turb, gchar* name, gint start, gint end );
+gint GetRealRawValue( gint turb, gchar* name, gint start, gint end, double *values );
 
 #endif

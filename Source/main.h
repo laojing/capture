@@ -15,8 +15,7 @@
 
 
 typedef struct _TenData TenData;
-struct _TenData
-{
+struct _TenData {
 	int savetime;
 	int turbnum;
 	float Wind;
@@ -37,25 +36,20 @@ struct _TenData
 };
 
 typedef struct _PowerBin PowerBin;
-struct _PowerBin
-{
+struct _PowerBin {
 	int num;
 	float w;
 	float p;
-	float *winds;
-	float *powers;
 };
 
 typedef struct _PowerTurb PowerTurb;
-struct _PowerTurb
-{
+struct _PowerTurb {
 	float effi;
 	PowerBin bins[50];
 };
 
 typedef struct _Follow Follow;
-struct _Follow
-{
+struct _Follow {
 	int turbnum;
 	float Power;
 	float Var;
